@@ -1,3 +1,6 @@
+# export BASHRC_CONFIG_DIR=$HOME/Documents/bashrc
+# . $BASHRC_CONFIG_DIR/main.sh
+
 # to be sourced only by ~/.bashrc
 if [[ -z $BASHRC_CONFIG_DIR ]]; then
     echo "Please export BASHRC_CONFIG_DIR=<bashrc git dir> in your main bashrc"
