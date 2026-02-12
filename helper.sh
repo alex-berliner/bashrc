@@ -1,8 +1,4 @@
-PROGRAMS_DIR_DEFAULT="$HOME/Programs"
-export PROGRAMS_DIR="${PROGRAMS_DIR:-$PROGRAMS_DIR_DEFAULT}"
-
-EDITOR_DEFAULT="vi"
-export EDITOR="${EDITOR:-$EDITOR_DEFAULT}"
+EDITOR_WHAT_IM_USIN_2DAY=codium
 
 function sortinput ()
 {
@@ -19,28 +15,24 @@ function cx ()
 	};
 }
 
-function vim ()
+function c ()
 {
-    # osx users, use stty -g
-    local STTYOPTS="$(stty --save)"
-    stty stop '' -ixoff
-    command vim "$@"
-    stty "$STTYOPTS"
+    $EDITOR_WHAT_IM_USIN_2DAY "$@" &> /dev/null
 }
 
 function n ()
 {
-    code -g "$@" &> /dev/null
+    $EDITOR_WHAT_IM_USIN_2DAY "$@" &> /dev/null
 }
 
 function note ()
 {
-    n -g "$@" &> /dev/null
+    $EDITOR_WHAT_IM_USIN_2DAY "$@" &> /dev/null
 }
 
 function notepad ()
 {
-    n -g "$@" &> /dev/null
+    $EDITOR_WHAT_IM_USIN_2DAY "$@" &> /dev/null
 }
 
 function gitk ()
@@ -57,16 +49,3 @@ alias sbash="source ~/.bashrc"
 ### overrides
 # Colorize the ls output ##
 alias ls='ls --color=auto'
-
-## Use a long listing format ##
-alias cd=cd_func
-
-### cds
-alias cdwin="cd $WINHOME"
-alias cdlin="cd $HOME"
-
-function wcd
-{
-    echo $1 | sed 's/\\/\\\\/g' | xargs wslpath -u | xargs cd
-}
-
