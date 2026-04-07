@@ -4,7 +4,7 @@ function fts {
     sudo apt update -y
     sudo apt full-upgrade -y
     sudo apt install -y gcc-arm-none-eabi
-    sudo apt install -y gcc g++ cmake make bison git git-cola gitk vim tree tmux
+    sudo apt install -y gcc g++ cmake make bison git git-cola gitk vim tree tmux dtrx scrcpy adb
     sudo apt install -y wine
     sudo apt install -y wireguard
     sudo apt install -y chromium-browser
