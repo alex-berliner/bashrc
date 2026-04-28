@@ -3,6 +3,5 @@
 # echo export RC_REPO="`pwd`" >> ~/.bashrc
 # echo . $RC_REPO/main.sh >> ~/.bashrc
 
-. $RC_REPO/devkitpro.sh
 . $RC_REPO/helper.sh
 . $RC_REPO/fts.sh

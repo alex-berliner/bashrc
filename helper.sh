@@ -44,7 +44,7 @@ function gitk ()
 alias cgrep="grep -rIn"
 alias ffind="find -iname"
 alias sai="sudo apt-get install"
-alias sbash="source ~/.bashrc"
+alias s="source ~/.bashrc"
 
 ### overrides
 # Colorize the ls output ##

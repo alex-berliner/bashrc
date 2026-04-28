@@ -17,14 +17,11 @@ function fts {
     sudo apt update -y
     sudo apt install -y codium
     
-    # cursor
-    sudo $RC_REPO/bin/install_cursor.sh
-
     # gamin
-    sudo add-apt-repository -y ppa:libretro/testing
-    sudo apt update
-    sudo apt install -y retroarch
-    sudo apt install -y steam-installer lutris 
+    # sudo add-apt-repository -y ppa:libretro/testing
+    # sudo apt update
+    # sudo apt install -y retroarch
+    # sudo apt install -y steam-installer lutris 
 
     sudo snap install discord
     sudo apt autoremove -y
