@@ -1,7 +1,7 @@
 : "${RC_REPO:?Error: RC_REPO environment variable is not defined}"
-# add to bashrc
-# RC_REPO=""
-# . $RC_REPO/main.sh
+# add to bashrc, run from bashrc root
+# echo export RC_REPO="`pwd`" >> ~/.bashrc
+# echo . $RC_REPO/main.sh >> ~/.bashrc
 
 . $RC_REPO/devkitpro.sh
 . $RC_REPO/helper.sh
