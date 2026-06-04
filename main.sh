@@ -8,5 +8,5 @@
 
 # deploy tmux config (idempotent symlink to XDG location)
 mkdir -p ~/.config/tmux
-ln -sf "$RC_REPO/tmux.conf" ~/.config/tmux/tmux.conf
+ln -sf "$RC_REPO/conf/tmux.conf" ~/.config/tmux/tmux.conf
 command -v tmux >/dev/null && tmux info &>/dev/null && tmux source-file ~/.config/tmux/tmux.conf
