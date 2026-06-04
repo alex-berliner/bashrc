@@ -45,6 +45,7 @@ alias cgrep="grep -rIn"
 alias ffind="find -iname"
 alias sai="sudo apt-get install"
 alias s="source ~/.bashrc"
+alias t="tmux"
 
 ### overrides
 # Colorize the ls output ##
