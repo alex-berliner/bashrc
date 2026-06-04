@@ -5,3 +5,8 @@
 
 . $RC_REPO/helper.sh
 . $RC_REPO/fts.sh
+
+# deploy tmux config (idempotent symlink to XDG location)
+mkdir -p ~/.config/tmux
+ln -sf "$RC_REPO/tmux.conf" ~/.config/tmux/tmux.conf
+command -v tmux >/dev/null && tmux info &>/dev/null && tmux source-file ~/.config/tmux/tmux.conf
