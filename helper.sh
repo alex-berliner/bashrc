@@ -46,7 +46,7 @@ alias ffind="find -iname"
 alias sai="sudo apt-get install"
 alias s="source ~/.bashrc"
 alias t="tmux"
-
+alias ta="tmux a -t"
 ### overrides
 # Colorize the ls output ##
 alias ls='ls --color=auto'
