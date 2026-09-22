@@ -9,8 +9,8 @@ function fts {
     sudo apt install -y wireguard
     sudo apt install -y chromium-browser
 
-    sudo snap install zellij --classic
-
+    sudo apt remove -y modemmanager
+    
     # codium https://vscodium.com/
     wget -qO - https://gitlab.com/paulcarroty/vscodium-deb-rpm-repo/raw/master/pub.gpg \
     | gpg --dearmor \
