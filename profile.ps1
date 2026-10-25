@@ -20,7 +20,7 @@ function Start-ClaudeAdmin([string]$ConfigDir, [string[]]$ClaudeArgs) {
         try { claude @ClaudeArgs } finally { $env:CLAUDE_CONFIG_DIR = $old }
     } else {
         $cmd = if ($ConfigDir) { "`$env:CLAUDE_CONFIG_DIR='$ConfigDir'; claude $ClaudeArgs" } else { "claude $ClaudeArgs" }
-        Start-Process (Get-Process -Id $PID).Path -Verb RunAs -ArgumentList '-NoExit', '-Command', $cmd
+        Start-Process (Get-Process -Id $PID).Path -Verb RunAs -WorkingDirectory (Get-Location).Path -ArgumentList '-NoExit', '-Command', $cmd
     }
 }
 $claude2dir = Join-Path $HOME '.claude-2'
