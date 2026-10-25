@@ -83,7 +83,7 @@ alias cl='claude'
 alias cl2='CLAUDE_CONFIG_DIR=$HOME/.claude-2 claude'
 _claude_admin() {
     local slot=$1; shift
-    sudo -u claude-admin -i bash -c 'cd "$1" 2>/dev/null || cd "$2"; slot=$3; shift 3
+    sudo -u claude-admin -H bash -l -c 'cd "$1" 2>/dev/null || cd "$2"; slot=$3; shift 3
         [ -n "$slot" ] && export CLAUDE_CONFIG_DIR="$HOME/$slot"; exec claude "$@"' _ "$PWD" "$HOME" "$slot" "$@"
 }
 cla()           { _claude_admin "" "$@"; }
