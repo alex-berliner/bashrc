@@ -81,4 +81,5 @@ alias dangeresque="claude --dangerously-skip-permissions"
 alias claude-admin='sudo -u claude-admin -i claude'
 
 # second Claude account (login kept in sync by /srv/infra/tools/creds-sync.py)
-alias claude2=\x27CLAUDE_CONFIG_DIR=$HOME/.claude-2 claude --dangerously-skip-permissions\x27
+alias claude2='CLAUDE_CONFIG_DIR=$HOME/.claude-2 claude --dangerously-skip-permissions'
+alias claude2-admin='sudo -u claude-admin -i bash -c '"'"'CLAUDE_CONFIG_DIR=$HOME/.claude-2 exec claude'"'"
