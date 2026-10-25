@@ -6,7 +6,7 @@ grep -qE "^(export )?RC_REPO=" ~/.bashrc || echo "export RC_REPO=\"$DIR_PATH\"" 
 grep -q 'RC_REPO/main.sh' ~/.bashrc || echo ". \"\$RC_REPO/main.sh\"" >> ~/.bashrc
 
 # claude-admin: a separate account with passwordless root, for Claude sessions that need it.
-# Your own user keeps password sudo. Enter it with `claude-admin` (alias in helper.sh) or
+# Your own user keeps password sudo. Enter it with `cla` (alias in helper.sh) or
 # `sudo -u claude-admin -i`. It has no password and no SSH key of its own.
 setup_claude_admin() {
     local me sudoers=/etc/sudoers.d/50-claude-admin tmp
