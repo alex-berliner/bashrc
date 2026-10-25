@@ -89,7 +89,8 @@ _claude_admin() {
         set -e
         u=$1 g=$2 home=$3 cwd=$4 slot=$5 term=$6 lang=$7; shift 7
         src=/run/cla-src.$$; mkdir -p "$src"; mount --bind "$home" "$src"
-        bindfs -o allow_other --map="$u/claude-admin:@$g/@claude-admin" "$src" "$home"
+        map="$u/claude-admin:@$g/@claude-admin"   # fuse2 builds need nonempty, fuse3 builds reject it
+        bindfs -o allow_other,nonempty --map="$map" "$src" "$home" 2>/dev/null || bindfs -o allow_other --map="$map" "$src" "$home"
         cd "$cwd" 2>/dev/null || cd "$home"
         envargs=(HOME="$home" TERM="$term" LANG="$lang" PATH=/home/claude-admin/.local/bin:/usr/local/bin:/usr/bin:/bin)
         [ -n "$slot" ] && envargs+=(CLAUDE_CONFIG_DIR="$home/$slot")
