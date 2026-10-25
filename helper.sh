@@ -50,3 +50,32 @@ alias ta="tmux a -t"
 ### overrides
 # Colorize the ls output ##
 alias ls='ls --color=auto'
+
+### toolchains (each only if installed on this machine)
+[ -d /opt/devkitpro ] && {
+    export DEVKITPRO=/opt/devkitpro
+    export DEVKITARM=/opt/devkitpro/devkitARM
+    export DEVKITPPC=/opt/devkitpro/devkitPPC
+}
+[ -f "$HOME/.local/bin/env" ] && . "$HOME/.local/bin/env"
+[ -f "$HOME/.cargo/env" ] && . "$HOME/.cargo/env"
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+# .NET SDK (installed via dotnet-install.sh to ~/.dotnet)
+if [ -d "$HOME/.dotnet" ]; then
+    export DOTNET_ROOT="$HOME/.dotnet"
+    case ":$PATH:" in
+      *":$DOTNET_ROOT:"*) ;;
+      *) export PATH="$DOTNET_ROOT:$DOTNET_ROOT/tools:$PATH" ;;
+    esac
+fi
+[ "$(hostname)" = box ] && export CARGO_TARGET_DIR=/tmp/ct_zero-layers
+
+### docker: your own rootless daemon where there is one; system services use sudo docker / claude-admin
+[ -S "/run/user/$(id -u)/docker.sock" ] && export DOCKER_HOST="unix:///run/user/$(id -u)/docker.sock"
+
+### claude
+alias dangeresque="claude --dangerously-skip-permissions"
+# claude-admin: passwordless root for Claude; your own sudo still asks (see install.sh)
+alias claude-admin='sudo -u claude-admin -i claude'
