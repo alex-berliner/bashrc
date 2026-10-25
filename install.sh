@@ -14,6 +14,7 @@ setup_claude_admin() {
     [ "$me" = claude-admin ] && return
     command -v sudo >/dev/null || { echo "no sudo: skipping claude-admin"; return; }
 
+    command -v bindfs >/dev/null || sudo apt-get install -y bindfs   # cla/dang mirror your home with it
     id claude-admin &>/dev/null || sudo useradd --create-home --shell /bin/bash claude-admin
     sudo usermod --lock claude-admin                 # no password login
     id -nG claude-admin | grep -qw "$me" || sudo usermod -aG "$me" claude-admin   # can use your group-writable files

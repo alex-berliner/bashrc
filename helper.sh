@@ -77,14 +77,24 @@ fi
 
 ### claude: cl = plain; a = as claude-admin (passwordless root, your own sudo still asks, see install.sh);
 ### 2 = second account (~/.claude-2, login kept in sync by /srv/infra/tools/creds-sync.py); dang*/dangeresque* = admin + --dangerously-skip-permissions
-### The admin ones start in the directory you ran them from (your home if claude-admin can't enter it);
-### ~ and Claude's own config/login stay claude-admin's.
+### The admin ones run claude as claude-admin inside a private mount namespace where YOUR home is mirrored (bindfs)
+### with ownership mapped to claude-admin: same paths, same ~/.claude, ~/.claude.json, sessions and project files,
+### everything it writes stays owned by you, and the mount disappears with the session. Starts in the current directory.
 alias cl='claude'
 alias cl2='CLAUDE_CONFIG_DIR=$HOME/.claude-2 claude'
 _claude_admin() {
     local slot=$1; shift
-    sudo -u claude-admin -H bash -l -c 'cd "$1" 2>/dev/null || cd "$2"; slot=$3; shift 3
-        [ -n "$slot" ] && export CLAUDE_CONFIG_DIR="$HOME/$slot"; exec claude "$@"' _ "$PWD" "$HOME" "$slot" "$@"
+    command -v bindfs >/dev/null || { echo "bindfs missing: run ~/bin/bashrc/install.sh"; return 1; }
+    sudo unshare -m --propagation private bash -c '
+        set -e
+        u=$1 g=$2 home=$3 cwd=$4 slot=$5 term=$6 lang=$7; shift 7
+        src=/run/cla-src.$$; mkdir -p "$src"; mount --bind "$home" "$src"
+        bindfs -o allow_other --map="$u/claude-admin:@$g/@claude-admin" "$src" "$home"
+        cd "$cwd" 2>/dev/null || cd "$home"
+        envargs=(HOME="$home" TERM="$term" LANG="$lang" PATH=/home/claude-admin/.local/bin:/usr/local/bin:/usr/bin:/bin)
+        [ -n "$slot" ] && envargs+=(CLAUDE_CONFIG_DIR="$home/$slot")
+        exec runuser -u claude-admin -- env "${envargs[@]}" claude "$@"
+    ' _ "$(id -un)" "$(id -gn)" "$HOME" "$PWD" "$slot" "${TERM:-xterm}" "${LANG:-C.UTF-8}" "$@"
 }
 cla()           { _claude_admin "" "$@"; }
 dang()          { _claude_admin "" --dangerously-skip-permissions "$@"; }
