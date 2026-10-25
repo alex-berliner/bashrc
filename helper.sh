@@ -79,3 +79,6 @@ fi
 alias dangeresque="claude --dangerously-skip-permissions"
 # claude-admin: passwordless root for Claude; your own sudo still asks (see install.sh)
 alias claude-admin='sudo -u claude-admin -i claude'
+
+# second Claude account (login kept in sync by /srv/infra/tools/creds-sync.py)
+alias claude2=\x27CLAUDE_CONFIG_DIR=$HOME/.claude-2 claude --dangerously-skip-permissions\x27
