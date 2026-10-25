@@ -75,11 +75,13 @@ fi
 ### docker: your own rootless daemon where there is one; system services use sudo docker / claude-admin
 [ -S "/run/user/$(id -u)/docker.sock" ] && export DOCKER_HOST="unix:///run/user/$(id -u)/docker.sock"
 
-### claude
-alias dangeresque="claude --dangerously-skip-permissions"
-# claude-admin: passwordless root for Claude; your own sudo still asks (see install.sh)
-alias claude-admin='sudo -u claude-admin -i claude'
-
-# second Claude account (login kept in sync by /srv/infra/tools/creds-sync.py)
-alias claude2='CLAUDE_CONFIG_DIR=$HOME/.claude-2 claude --dangerously-skip-permissions'
-alias claude2-admin='sudo -u claude-admin -i bash -c '"'"'CLAUDE_CONFIG_DIR=$HOME/.claude-2 exec claude'"'"
+### claude: cl = plain; a = as claude-admin (passwordless root, your own sudo still asks, see install.sh);
+### 2 = second account (~/.claude-2, login kept in sync by /srv/infra/tools/creds-sync.py); dang*/dangeresque* = admin + --dangerously-skip-permissions
+alias cl='claude'
+alias cl2='CLAUDE_CONFIG_DIR=$HOME/.claude-2 claude'
+alias cla='sudo -u claude-admin -i claude'
+alias dang='sudo -u claude-admin -i claude --dangerously-skip-permissions'
+alias dangeresque='dang'
+alias cl2a='sudo -u claude-admin -i bash -c '"'"'CLAUDE_CONFIG_DIR=$HOME/.claude-2 exec claude'"'"
+alias dang2='sudo -u claude-admin -i bash -c '"'"'CLAUDE_CONFIG_DIR=$HOME/.claude-2 exec claude --dangerously-skip-permissions'"'"
+alias dangeresque2='dang2'
