@@ -2,7 +2,7 @@
 # Safe to re-run: every step checks before it changes anything.
 
 DIR_PATH=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &> /dev/null && pwd)
-grep -q "^export RC_REPO=" ~/.bashrc || echo "export RC_REPO=\"$DIR_PATH\"" >> ~/.bashrc
+grep -qE "^(export )?RC_REPO=" ~/.bashrc || echo "export RC_REPO=\"$DIR_PATH\"" >> ~/.bashrc
 grep -q 'RC_REPO/main.sh' ~/.bashrc || echo ". \"\$RC_REPO/main.sh\"" >> ~/.bashrc
 
 # claude-admin: a separate account with passwordless root, for Claude sessions that need it.
