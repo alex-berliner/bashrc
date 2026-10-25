@@ -77,11 +77,18 @@ fi
 
 ### claude: cl = plain; a = as claude-admin (passwordless root, your own sudo still asks, see install.sh);
 ### 2 = second account (~/.claude-2, login kept in sync by /srv/infra/tools/creds-sync.py); dang*/dangeresque* = admin + --dangerously-skip-permissions
+### The admin ones start in the directory you ran them from (your home if claude-admin can't enter it);
+### ~ and Claude's own config/login stay claude-admin's.
 alias cl='claude'
 alias cl2='CLAUDE_CONFIG_DIR=$HOME/.claude-2 claude'
-alias cla='sudo -u claude-admin -i claude'
-alias dang='sudo -u claude-admin -i claude --dangerously-skip-permissions'
-alias dangeresque='dang'
-alias cl2a='sudo -u claude-admin -i bash -c '"'"'CLAUDE_CONFIG_DIR=$HOME/.claude-2 exec claude'"'"
-alias dang2='sudo -u claude-admin -i bash -c '"'"'CLAUDE_CONFIG_DIR=$HOME/.claude-2 exec claude --dangerously-skip-permissions'"'"
-alias dangeresque2='dang2'
+_claude_admin() {
+    local slot=$1; shift
+    sudo -u claude-admin -i bash -c 'cd "$1" 2>/dev/null || cd "$2"; slot=$3; shift 3
+        [ -n "$slot" ] && export CLAUDE_CONFIG_DIR="$HOME/$slot"; exec claude "$@"' _ "$PWD" "$HOME" "$slot" "$@"
+}
+cla()           { _claude_admin "" "$@"; }
+dang()          { _claude_admin "" --dangerously-skip-permissions "$@"; }
+dangeresque()   { dang "$@"; }
+cl2a()          { _claude_admin .claude-2 "$@"; }
+dang2()         { _claude_admin .claude-2 --dangerously-skip-permissions "$@"; }
+dangeresque2()  { dang2 "$@"; }
