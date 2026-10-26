@@ -75,26 +75,26 @@ fi
 ### docker: your own rootless daemon where there is one; system services use sudo docker / claude-admin
 [ -S "/run/user/$(id -u)/docker.sock" ] && export DOCKER_HOST="unix:///run/user/$(id -u)/docker.sock"
 
-### claude: cl = plain; a = as claude-admin (passwordless root, your own sudo still asks, see install.sh);
-### 2 = second account (~/.claude-2, login kept in sync by /srv/infra/tools/creds-sync.py); dang*/dangeresque* = admin + --dangerously-skip-permissions
-### The admin ones run claude as claude-admin through /usr/local/sbin/claude-admin-session (installed by
-### /srv/infra playbooks/admin-home.yml): a private mount namespace where your home is mirrored with ownership
-### mapped to claude-admin, at its own path and in place of claude-admin's home. git, gh, ssh (your keys, config
-### aliases, known_hosts) and Claude all see your files; what it writes stays owned by you. Starts in the current
-### directory. claude-admin also carries your groups (dialout, docker, ...).
+### claude: cl = plain; 2 = second account (~/.claude-2, login kept alive by /srv/infra/tools/creds-sync.py);
+### dang*/dangeresque* = --dangerously-skip-permissions. All of them run as you; none of them has root.
 alias cl='claude'
 alias cl2='CLAUDE_CONFIG_DIR=$HOME/.claude-2 claude'
-_claude_admin() {
-    local slot=${1:--}; shift
-    [ -x /usr/local/sbin/claude-admin-session ] || { echo "claude-admin-session is not installed on this machine"; return 1; }
-    sudo /usr/local/sbin/claude-admin-session "$(id -un)" "$PWD" "$slot" -- "$@"
+alias dang='claude --dangerously-skip-permissions'
+alias dangeresque='dang'
+alias dang2='CLAUDE_CONFIG_DIR=$HOME/.claude-2 claude --dangerously-skip-permissions'
+alias dangeresque2='dang2'
+
+### Root leases (/srv/infra/tools/lease.py): let one machine's sessions use root on other machines for a while.
+###   lease il lenovo,desktop-ubuntu 12h      unlease il [lenovo]      leases
+### Asks for your password once (sudo on box). While a lease is active, sessions on <from> run root commands
+### with `ssh <to>-root ...`; it ends by itself. Without a lease, root anywhere needs your password.
+_lease() {
+    if [ "$(hostname)" = box ]; then sudo -u claude-admin -H /srv/infra/tools/lease.py "$@"
+    else ssh -t box sudo -u claude-admin -H /srv/infra/tools/lease.py "$@"; fi
 }
-cla()           { _claude_admin - "$@"; }
-dang()          { _claude_admin - --dangerously-skip-permissions "$@"; }
-dangeresque()   { dang "$@"; }
-cl2a()          { _claude_admin .claude-2 "$@"; }
-dang2()         { _claude_admin .claude-2 --dangerously-skip-permissions "$@"; }
-dangeresque2()  { dang2 "$@"; }
+lease()   { _lease grant "$@"; }
+unlease() { _lease revoke "$@"; }
+leases()  { _lease list; }
 
 ### vpn on|off|status: the boot-time WireGuard (wg-quick@wg.service). Use this, not the desktop network menu:
 ### the menu only undoes NetworkManager's copy and leaves wg-quick's routing in place, which cuts all traffic.
