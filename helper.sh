@@ -77,28 +77,20 @@ fi
 
 ### claude: cl = plain; a = as claude-admin (passwordless root, your own sudo still asks, see install.sh);
 ### 2 = second account (~/.claude-2, login kept in sync by /srv/infra/tools/creds-sync.py); dang*/dangeresque* = admin + --dangerously-skip-permissions
-### The admin ones run claude as claude-admin inside a private mount namespace where YOUR home is mirrored (bindfs)
-### with ownership mapped to claude-admin: same paths, same ~/.claude, ~/.claude.json, sessions and project files,
-### everything it writes stays owned by you, and the mount disappears with the session. Starts in the current directory.
+### The admin ones run claude as claude-admin through /usr/local/sbin/claude-admin-session (installed by
+### /srv/infra playbooks/admin-home.yml): a private mount namespace where your home is mirrored with ownership
+### mapped to claude-admin, at its own path and in place of claude-admin's home. git, gh, ssh (your keys, config
+### aliases, known_hosts) and Claude all see your files; what it writes stays owned by you. Starts in the current
+### directory. claude-admin also carries your groups (dialout, docker, ...).
 alias cl='claude'
 alias cl2='CLAUDE_CONFIG_DIR=$HOME/.claude-2 claude'
 _claude_admin() {
-    local slot=$1; shift
-    command -v bindfs >/dev/null || { echo "bindfs missing: run ~/bin/bashrc/install.sh"; return 1; }
-    sudo unshare -m --propagation private bash -c '
-        set -e
-        u=$1 g=$2 home=$3 cwd=$4 slot=$5 term=$6 lang=$7; shift 7
-        src=/run/cla-src.$$; mkdir -p "$src"; mount --bind "$home" "$src"
-        map="$u/claude-admin:@$g/@claude-admin"   # fuse2 builds need nonempty, fuse3 builds reject it
-        bindfs -o allow_other,nonempty --map="$map" "$src" "$home" 2>/dev/null || bindfs -o allow_other --map="$map" "$src" "$home"
-        cd "$cwd" 2>/dev/null || cd "$home"
-        envargs=(HOME="$home" TERM="$term" LANG="$lang" PATH=/home/claude-admin/.local/bin:/usr/local/bin:/usr/bin:/bin)
-        [ -n "$slot" ] && envargs+=(CLAUDE_CONFIG_DIR="$home/$slot")
-        exec runuser -u claude-admin -- env "${envargs[@]}" claude "$@"
-    ' _ "$(id -un)" "$(id -gn)" "$HOME" "$PWD" "$slot" "${TERM:-xterm}" "${LANG:-C.UTF-8}" "$@"
+    local slot=${1:--}; shift
+    [ -x /usr/local/sbin/claude-admin-session ] || { echo "claude-admin-session is not installed on this machine"; return 1; }
+    sudo /usr/local/sbin/claude-admin-session "$(id -un)" "$PWD" "$slot" -- "$@"
 }
-cla()           { _claude_admin "" "$@"; }
-dang()          { _claude_admin "" --dangerously-skip-permissions "$@"; }
+cla()           { _claude_admin - "$@"; }
+dang()          { _claude_admin - --dangerously-skip-permissions "$@"; }
 dangeresque()   { dang "$@"; }
 cl2a()          { _claude_admin .claude-2 "$@"; }
 dang2()         { _claude_admin .claude-2 --dangerously-skip-permissions "$@"; }
