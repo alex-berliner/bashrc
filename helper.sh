@@ -103,3 +103,16 @@ dangeresque()   { dang "$@"; }
 cl2a()          { _claude_admin .claude-2 "$@"; }
 dang2()         { _claude_admin .claude-2 --dangerously-skip-permissions "$@"; }
 dangeresque2()  { dang2 "$@"; }
+
+### vpn on|off|status: the boot-time WireGuard (wg-quick@wg.service). Use this, not the desktop network menu:
+### the menu only undoes NetworkManager's copy and leaves wg-quick's routing in place, which cuts all traffic.
+### Only machines that have the service (il) do anything; over the VPN itself, `vpn off` ends your own session.
+vpn() {
+    systemctl is-enabled wg-quick@wg.service >/dev/null 2>&1 || { echo "no boot-time VPN (wg-quick@wg) on this machine"; return 1; }
+    case "${1:-status}" in
+        on)     sudo systemctl start wg-quick@wg && echo "vpn on" ;;
+        off)    sudo systemctl stop wg-quick@wg && echo "vpn off" ;;
+        status) systemctl is-active wg-quick@wg; sudo wg show wg latest-handshakes 2>/dev/null | awk -v n="$(date +%s)" '{printf "last handshake %d s ago\n", n-$2}' ;;
+        *)      echo "usage: vpn on|off|status"; return 1 ;;
+    esac
+}
